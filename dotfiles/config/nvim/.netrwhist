@@ -1,0 +1,7 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =5
+let g:netrw_dirhist_5='/home/void/.local/pipx/venvs/dotdrop/lib/python3.9/site-packages/dotdrop-1.4.1.dist-info'
+let g:netrw_dirhist_4='/home/void/.config/sv'
+let g:netrw_dirhist_3='/boot/efi'
+let g:netrw_dirhist_2='/home/void/Projects/Research/Alexsei/lexml/SiameseEncoder/data/memos'
+let g:netrw_dirhist_1='/home/void/.config/sv/panel'

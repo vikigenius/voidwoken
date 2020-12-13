@@ -1,0 +1,1 @@
+export ZDOTDIR=${XDG_CONFIG:-${HOME}/.config}/zsh

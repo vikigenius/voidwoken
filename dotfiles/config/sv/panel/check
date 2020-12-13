@@ -1,0 +1,5 @@
+#!/bin/sh
+
+barname=$DESKTOP_SESSION$(hostname)
+
+test -f $barname

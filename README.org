@@ -1,0 +1,6 @@
+#+TITLE: Readme
+This repository contains my dotfiles needed for replicating my development environment. Additional tools are also included :)
+
+* Usage
+- Use pipx to install dotdrop.
+- Clone the repository into ~$HOME/.local/lib~

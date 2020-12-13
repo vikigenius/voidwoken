@@ -1,0 +1,5 @@
+#!/bin/sh
+
+sleep 5 # Wait for 5 seconds
+
+exec mailsync 2>&1

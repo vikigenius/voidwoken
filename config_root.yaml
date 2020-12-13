@@ -1,0 +1,62 @@
+config:
+  backup: true
+  banner: true
+  create: true
+  dotpath: dotfiles
+  keepdot: false
+  link_dotfile_default: nolink
+  link_on_import: nolink
+  longkey: false
+actions:
+  pre:
+    install: xbps-install -y -S {0}
+  post:
+    refind_theme: sh ./actions/refind/theme
+    lightdm_theme: sh ./actions/lightdm/theme
+dotfiles:
+  f_xdgdirs.sh:
+    src: etc/profile.d/xdgdirs.sh
+    dst: /etc/profile.d/xdgdirs.sh
+  d_zsh:
+    src: etc/zsh
+    dst: /etc/zsh
+    actions:
+    - install zsh
+  d_tmux:
+    src:
+    dst:
+    actions:
+    - install tmux
+  d_lightdm:
+    src: etc/lightdm
+    dst: /etc/lightdm
+    actions:
+    - install 'lightdm lightdm-webkit2-greeter light-locker'
+    - lightdm_theme
+  f_user-dirs.defaults:
+    src: etc/xdg/user-dirs.defaults
+    dst: /etc/xdg/user-dirs.defaults
+    actions:
+    - install 'xdg-user-dirs'
+  desktop:
+    src:
+    dst:
+    actions:
+    - install 'xst bspwm sxhkd polybar rofi dunst picom'
+  editor:
+    src:
+    dst:
+    actions:
+      - install 'neovim emacs'
+  f_refind.conf:
+    src: boot/efi/EFI/refind/refind.conf
+    dst: /boot/efi/EFI/refind/refind.conf
+    actions:
+      - refind_theme
+profiles:
+  stealthlabs:
+    dotfiles:
+    - ALL
+  thinkpad:
+    dotfiles:
+    - ALL

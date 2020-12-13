@@ -1,0 +1,12 @@
+#!/bin/sh
+
+THEME_URL="https://github.com/manilarome/lightdm-webkit2-theme-glorious/releases/download/v2.0.5/lightdm-webkit2-theme-glorious-2.0.5.tar.gz"
+THEME_DST=/usr/share/lightdm-webkit/themes/glorious
+
+if [ -d  $THEME_DST ]; then
+    echo "Theme already installed... updating"
+    rm -rf $THEME_DST
+fi
+
+curl -s $THEME_URL | tar xvz -C $THEME_DST
+

@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+#This service needs network to be up, so we wait in a loop
+
+if ! ping -c1 -w 15 www.google.com > /dev/null 2>&1
+then
+    echo "Network is down, max number of tries exceeded: exiting ..."
+    exit 1
+fi
+
+exec mopidy --config ~/.config/mopidy/mopidy.conf 2>&1

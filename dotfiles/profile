@@ -1,0 +1,16 @@
+# LightDM sources these files. This won't get sourced if zsh is your login shell.
+# To overcome this create a .zprofile similar to /etc/zprofile (simulate sh and source .profile)
+export PATH=$HOME/.local/bin:$PATH
+export SHELL=/bin/zsh
+export XDG_LOG_DIR=$HOME/.local/log
+export XDG_SERVICE_DIR=$HOME/.local/service
+export DOTBIN=$HOME/.local/dotbin
+export SSH_AUTH_SOCK
+
+ulimit -c unlimited # Allows core dumps to be generated in home dir
+
+export PATH="$HOME/.cargo/bin:$PATH"
+export SXHKD_SHELL=/bin/sh
+
+export NOTMUCH_CONFIG=$XDG_CONFIG_HOME/notmuch/config
+export MAILDIR=$XDG_DATA_HOME/mail

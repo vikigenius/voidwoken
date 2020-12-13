@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+#This service needs network to be up, so we wait for other services
+
+SVDIR=${XDG_SERVICE_DIR:-$HOME/.local/service} sv check pulseaudio
+
+# Add a networking check
+# sv check dhcpcd
+exec spotifyd --no-daemon --config-path ~/.config/spotifyd/spotify.conf 2>&1

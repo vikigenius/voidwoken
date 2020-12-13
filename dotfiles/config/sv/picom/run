@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec picom -c --show-all-xerrors --log-level "DEBUG" --xrender-sync-fence --config ~/.config/picom/config 2>&1
