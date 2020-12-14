@@ -2,6 +2,18 @@
 # Zsh configuration
 # -----------------
 
+# ----------------------
+# Initialize environment
+# ----------------------
+#
+export ZIM_HOME=$XDG_DATA_HOME/zim
+export ZSH_CACHE_HOME=$XDG_CACHE_HOME/zsh
+export HISTFILE=$ZSH_CACHE_HOME/zhistory
+
+# Should remove this once XDG Support is added
+export TMUX_CONFIG_HOME=$XDG_CONFIG_HOME/tmux
+
+
 source $ZDOTDIR/config.zsh
 
 # ------------------
@@ -26,4 +38,8 @@ autoload -Uz xevkey
 # If you have host-local configuration, this is where you'd put it
 [ -f ~/.zshrc ] && source ~/.zshrc
 
-eval "$(starship init zsh)"
+# Custom starship prompt only in non pseudo terminal slaves
+
+case $(tty) in /dev/pts/[0-9]*)
+    eval "$(starship init zsh)" ;;
+esac

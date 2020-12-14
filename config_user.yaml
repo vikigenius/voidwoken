@@ -64,15 +64,12 @@ dotfiles:
     - '*supervise*'
     upignore:
     - '*supervise*'
-  d_bin:
-    src: local/bin
-    dst: ~/.local/bin
-    cmpignore:
-    - '*dotdrop'
-    instignore:
-    - '*dotdrop'
-    upignore:
-    - '*dotdrop'
+  d_ubin:
+    src: local/ubin
+    dst: ~/.local/ubin
+  d_dotbin:
+    src: local/dotbin
+    dst: ~/.local/dotbin
 profiles:
   stealthlabs:
     dotfiles:

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+SVDIR=$XDG_SERVICE_DIR sv "$@"

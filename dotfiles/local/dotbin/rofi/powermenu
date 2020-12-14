@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Bash required for echo -e shenanigans !
+
+rofi_command="rofi -theme theme/powermenu.rasi"
+
+### Options ###
+power_off="    Shutdown"
+reboot="    Reboot"
+lock="      Lock"
+log_out="    Logout"
+
+# Variable passed to rofi
+options="$power_off\n$reboot\n$lock\n$log_out"
+menu_choice=$(echo -e "$options" | $rofi_command -dmenu)
+
+case $menu_choice in
+    $power_off)
+        loginctl poweroff
+        ;;
+    $reboot)
+        loginctl reboot
+        ;;
+    $lock)
+        light-locker-command -l
+        ;;
+    $log_out)
+        bspc quit
+        ;;
+esac

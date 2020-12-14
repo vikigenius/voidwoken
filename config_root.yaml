@@ -42,7 +42,7 @@ dotfiles:
     src:
     dst:
     actions:
-    - install 'xst bspwm sxhkd polybar rofi dunst picom'
+    - install 'xst bspwm sxhkd polybar rofi dunst picom pulseaudio'
   editor:
     src:
     dst:

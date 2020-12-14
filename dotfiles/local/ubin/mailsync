@@ -1,0 +1,8 @@
+#!/bin/sh
+
+while :
+do
+    mbsync -c $XDG_CONFIG_HOME/isync/mbsyncrc -a && notmuch new && afew -a -t
+    sleep 300
+done
+
