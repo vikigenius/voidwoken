@@ -84,6 +84,12 @@ dotfiles:
   f_xprofile:
     src: xprofile
     dst: ~/.xprofile
+  d_picom:
+    src: config/picom
+    dst: ~/.config/picom
+  d_rofi:
+    src: config/rofi
+    dst: ~/.config/rofi
 profiles:
   stealthlabs:
     dotfiles:
