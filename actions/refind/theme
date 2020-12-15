@@ -1,11 +1,12 @@
 #!/bin/sh
 
 THEME_URL="https://gitlab.com/perthshiretim/refind-metal-theme/-/archive/master/refind-metal-theme-master.tar.gz"
-THEME_DST=/boot/efi/EFI/refind/metal
+THEME_DST=/boot/efi/EFI/refind/themes/metal
 
 if [ -d  $THEME_DST ]; then
     echo "Theme already installed... updating"
-    rm -rf $THEME_DST
+else
+    mkdir -p $THEME_DST
 fi
 
-curl -s $THEME_URL | tar xvz -C $THEME_DST
+curl -L -s $THEME_URL | tar xvz -C $THEME_DST --strip-components=1
