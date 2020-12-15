@@ -1,0 +1,11 @@
+#!/bin/sh
+
+export ZIM_HOME=${ZIM_HOME:-$HOME/.local/share/zim}
+export ZDOTDIR=${ZDOTDIR:-$HOME/.config/zsh}
+export ZSH_CACHE_HOME=$HOME/.cache/zsh
+
+mkdir -p $ZIM_HOME
+
+wget https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh -O $ZIM_HOME/zimfw.zsh
+
+zsh $ZIM_HOME/zimfw.zsh install
