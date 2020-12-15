@@ -93,6 +93,9 @@ dotfiles:
   f_starship.toml:
     src: config/starship.toml
     dst: ~/.config/starship.toml
+  d_dunst:
+    src: config/dunst
+    dst: ~/.config/dunst
 profiles:
   stealthlabs:
     dotfiles:
