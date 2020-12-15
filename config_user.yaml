@@ -13,7 +13,7 @@ actions:
   pre:
     vim-plug-install: actions/nvim/pluginstall
     doom-install: actions/emacs/doominstall
-  plug-install: vim +PlugInstall +qall
+  pluginstall: vim +PlugInstall +qall
   doom-sync: '{{@@ emacs_dir @@}}/bin/doom sync'
   ziminstall: actions/zsh/ziminstall
   starship-install: 'curl -fsSL https://starship.rs/install.sh | bash'
@@ -42,6 +42,8 @@ dotfiles:
   d_nvim:
     src: config/nvim
     dst: ~/.config/nvim
+    actions:
+    - pluginstall
   f_profile:
     src: profile
     dst: ~/.profile
