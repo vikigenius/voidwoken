@@ -81,6 +81,9 @@ dotfiles:
   d_fontconfig:
     src: config/fontconfig
     dst: ~/.config/fontconfig
+  f_xprofile:
+    src: xprofile
+    dst: ~/.xprofile
 profiles:
   stealthlabs:
     dotfiles:
