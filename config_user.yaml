@@ -16,7 +16,7 @@ actions:
   vim-pluginstall: vim +PlugInstall +qall
   doom-sync: '{{@@ emacs_dir @@}}/bin/doom sync'
   ziminstall: actions/zsh/ziminstall
-  starship-install: 'curl -fsSL https://starship.rs/install.sh | bash'
+  starship-install: curl -fsSL https://starship.rs/install.sh | bash
 dotfiles:
   d_zsh:
     src: config/zsh
@@ -78,6 +78,9 @@ dotfiles:
   d_dotbin:
     src: local/dotbin
     dst: ~/.local/dotbin
+  d_fontconfig:
+    src: config/fontconfig
+    dst: ~/.config/fontconfig
 profiles:
   stealthlabs:
     dotfiles:
