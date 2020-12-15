@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+TMUX_PLUGIN_HOME=$HOME/.local/share/tmux/plugins
+mkdir -p $TMUX_PLUGIN_HOME
+TPM_PATH=$TMUX_PLUGIN_HOME/tpm
+
+if [ -d "$TPM_PATH" ]; then
+    echo "TPM Already installed ..."
+else
+    git clone https://github.com/tmux-plugins/tpm "$TPM_PATH"
+fi
+
+echo "Installing new TMUX Plugins"
+
+tmux new -d -s __noop >/dev/null 2>&1 || true
+tmux set-environment -g TMUX_PLUGIN_MANAGER_PATH "$TMUX_PLUGIN_HOME"
+$TPM_PATH/bin/install_plugins || true
+tmux kill-session -t __noop >/dev/null 2>&1 || true

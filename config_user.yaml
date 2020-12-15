@@ -17,6 +17,7 @@ actions:
   doom-sync: '{{@@ emacs_dir @@}}/bin/doom sync'
   ziminstall: actions/zsh/ziminstall
   starship-install: curl -fsSL https://starship.rs/install.sh | bash
+  tpminstall: actions/tmux/tpminstall
 dotfiles:
   d_zsh:
     src: config/zsh
@@ -54,6 +55,8 @@ dotfiles:
   d_tmux:
     src: config/tmux
     dst: ~/.config/tmux
+    actions:
+    - tpminstall
   d_polybar:
     src: config/polybar
     dst: ~/.config/polybar
