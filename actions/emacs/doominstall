@@ -1,6 +1,6 @@
 #!/bin/sh
 
-EMACS_DIR=$HOME/.emacs.d
+EMACS_DIR=$HOME/.config/emacs
 
 test -d $EMACS_DIR || git clone --depth 1 https://github.com/hlissner/doom-emacs $EMACS_DIR
 $EMACS_DIR/bin/doom install

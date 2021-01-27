@@ -8,17 +8,29 @@ config:
   link_on_import: nolink
   longkey: false
 variables:
-  emacs_dir: "{{@@ env['HOME'] @@}}/.emacs.d"
+  emacs_dir: "{{@@ env['HOME'] @@}}/.config/emacs"
 actions:
   pre:
     pluginstall: actions/nvim/pluginstall
     doom-install: actions/emacs/doominstall
+    void-bootstrap: actions/void/bootstrap
+    pyenv-install: actions/python/pyenvinstall
   vim-pluginstall: vim +PlugInstall +qall
   doom-sync: '{{@@ emacs_dir @@}}/bin/doom sync'
   ziminstall: actions/zsh/ziminstall
   starship-install: curl -fsSL https://starship.rs/install.sh | bash
   tpminstall: actions/tmux/tpminstall
 dotfiles:
+  00_d_void:
+    src:
+    dst:
+    actions:
+    - void-boostrap
+  01_d_python:
+    src:
+    dst:
+    actions:
+    - python-setup
   d_zsh:
     src: config/zsh
     dst: ~/.config/zsh

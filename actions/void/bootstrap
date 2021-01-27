@@ -1,0 +1,10 @@
+#!/bin/sh
+PKG_REPO_DIR=$HOME/.local/lib/void-packages
+CWD=$(pwd)
+
+test -d $PKG_REPO_DIR || git clone https://github.com/vikigenius/void-packages $PKG_REPO_DIR
+cd $PKG_REPO_DIR
+git checkout custom
+git pull
+./xbps-src binary-bootstrap
+cd $CWD

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+REPO_DIR=$HOME/.local/lib/miniconda3
+
+test -d $REPO_DIR || curl -s https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh | bash -s -b -p $REPO_DIR
