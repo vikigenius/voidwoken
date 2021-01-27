@@ -61,39 +61,5 @@ to be looked into when a glyph is not found in a specic font
       <family>Symbola</family>
     </prefer>
   </alias>
-  <!--Snippet to ensure that file-icons is the sole provider of the 0xF106-0xF107 range-->
-  <match target="font">
-    <test name="family" compare="not_eq">
-      <string>file-icons</string>
-    </test>
-    <edit name="charset" mode="assign">
-      <minus>
-        <name>charset</name>
-        <charset>
-        <range>
-          <int>0xF106</int>
-          <int>0xF107</int>
-        </range>
-        </charset>
-      </minus>
-    </edit>
-  </match>
-  <!--Snippet to ensure that all-the-icons is the sole provider of the 0xE928-0xE929 range-->
-  <match target="font">
-    <test name="family" compare="not_eq">
-      <string>all-the-icons</string>
-    </test>
-    <edit name="charset" mode="assign">
-      <minus>
-        <name>charset</name>
-        <charset>
-        <range>
-          <int>0xE928</int>
-          <int>0xE929</int>
-        </range>
-        </charset>
-      </minus>
-    </edit>
-  </match>
 </fontconfig>
 
