@@ -1,0 +1,231 @@
+#+TITLE: Config
+* Appearance
+#+begin_src emacs-lisp
+(defun doom-private-setup-org ()
+  (interactive)
+  (electric-indent-local-mode -1))
+
+(setq
+ doom-theme 'doom-dracula
+ doom-font "Source Code Pro:pixelsize=16:antialias=true:autohint=true"
+ doom-variable-pitch-font (font-spec :family "Arvo" :style "Regular")
+ org-hide-emphasis-markers t)
+
+(add-hook 'org-mode-hook #'doom-private-setup-org)
+
+(custom-theme-set-faces! 'doom-dracula
+  ;;`(font-lock-comment-face :foreground , (doom-darken 'yellow 0.5))
+  `(markdown-code-face :background ,(doom-darken 'bg 0.075))
+  `(font-lock-variable-name-face :foreground ,(doom-lighten 'magenta 0.6)))
+
+(add-to-list 'doom-unicode-extra-fonts "icomoon" t)
+#+end_src
+* Development
+** Syntax Checkers
+#+begin_src emacs-lisp
+(after! flycheck
+  (setq
+   doom-modeline-checker-simple-format nil
+   flycheck-idle-change-delay 10
+   flycheck-check-syntax-automatically '(mode-enabled save idle-change)))
+#+end_src
+** Language Server
+To add other checkers to lsp-python use
+#+begin_src emacs-lisp :tangle no
+(add-hook! 'lsp-after-initialize-hook
+  (run-hooks (intern (format "%s-lsp-hook" major-mode))))
+(defun python-flycheck-setup ()
+  (flycheck-add-next-checker 'lsp 'python-flake8))
+(add-hook 'python-mode-lsp-hook
+          #'python-flycheck-setup)
+(setq
+ lsp-enable-file-watchers nil
+ lsp-idle-delay 0.5
+ lsp-ui-sideline-delay 0.5)
+(append 'lsp-file-watch-ignored '("[/\\\\]\\.github\\'", "[/\\\\]\\.venv\\'"))
+#+end_src
+General lsp settings
+#+begin_src emacs-lisp
+(setq
+ lsp-idle-delay 0.5
+ lsp-ui-sideline-delay 0.5)
+#+end_src
+** Languages
+*** Python
+#+begin_src emacs-lisp
+(set-file-template! 'python-mode :trigger "utf8")
+(setq
+ poetry-tracking-strategy 'switch-buffer
+ pyenv-mode-mode-line-format ""
+ python-indent-def-block-scale 1)
+(use-package! ox-ipynb :after ox)
+;; (add-hook 'python-mode-hook 'set-newline-and-indent)
+#+end_src
+*** Rust
+#+begin_src emacs-lisp
+(setq rustic-indent-offset 4)
+#+end_src
+*** Jsonnet
+#+begin_src emacs-lisp
+(use-package! jsonnet-mode
+  :defer t
+  :config
+  (set-electric! 'jsonnet-mode :chars '(?\n ?: ?{ ?}))
+  (setq jsonnet-use-smie t))
+
+(setq json-reformat:indent-width 2) ;; Only for json not for jsonnet
+#+end_src
+*** TypeScript (TSX)
+This is a language service plugin that serves as an alternative to the eslint language server extension provided by vscode.
+#+begin_src emacs-lisp :tangle no
+(setq lsp-clients-typescript-plugins
+        (vector
+          (list :name "typescript-eslint-language-service")))
+#+end_src
+
+We set the indendation levels to 2.
+#+begin_src emacs-lisp
+(setq web-mode-markup-indent-offset 2
+      web-mode-code-indent-offset 2)
+#+end_src
+
+Enable logging for tsserver:
+#+begin_src emacs-lisp :tangle no
+(setq lsp-clients-typescript-log-verbosity "debug"
+      lsp-typescript-tsserver-log t
+      lsp-typescript-tsserver-trace t)
+#+end_src
+
+This is how we set a custom configFile for eslint
+#+begin_src emacs-lisp :tangle no
+(setq! lsp-eslint-options '((configFile . ".lsp_eslintrc.json")))
+#+end_src
+
+This is how we disable the diagnostics: (supported after [[https://github.com/emacs-lsp/lsp-mode/pull/2596][lsp-mode#2596]] is merged).
+#+begin_src emacs-lisp
+(after! lsp-mode
+  (lsp-defun my/filter-typescript ((params &as &PublishDiagnosticsParams :diagnostics)
+                                   _workspace)
+             (lsp:set-publish-diagnostics-params-diagnostics
+              params
+              (or (seq-filter (-lambda ((&Diagnostic :source? :code?))
+                                (and (not (string= "typescript" source?))
+                                     (not (string= "6133" code?))))
+
+                              diagnostics)
+                  []))
+             params)
+
+  (setq lsp-diagnostic-filter 'my/filter-typescript ))
+#+end_src
+*** Vue
+We can use ~web-mode~ for highlighting. We can also install multiple-servers vscode-eslint and vls.
+Disable template diagnostics from vls, so that eslint can take care of it.
+#+begin_src emacs-lisp
+(define-derived-mode vue-mode web-mode "Vue"
+  "A major mode derived from web-mode, for editing .vue files with LSP support.")
+(add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
+(defun vue-setup()
+  (when (featurep! :tools lsp)
+    (lsp!)
+    (setq lsp-vetur-validation-template nil)))
+
+(add-hook 'vue-mode-hook #'vue-setup)
+#+end_src
+Alternatively we can use polymode:
+#+begin_src emacs-lisp :tangle no
+(defun polyvue-setup ()
+  (when (featurep! :tools lsp) (lsp!))
+  ;;(when (and (boundp 'spell-fu-mode) spell-fu-mode) (spell-fu-mode-disable))
+)
+
+(use-package! polymode
+  :ensure t
+  :defer t
+  :hook (vue-mode . polyvue-setup)
+  :mode ("\\.vue\\'" . vue-mode)
+  :config
+  (define-innermode poly-vue-template-innermode
+    :mode 'html-mode
+    :head-matcher "<[[:space:]]*template[[:space:]]*[[:space:]]*>"
+    :tail-matcher "</[[:space:]]*template[[:space:]]*[[:space:]]*>"
+    :head-mode 'host
+    :tail-mode 'host)
+
+  (define-innermode poly-vue-script-innermode
+    :mode 'js-mode
+    :head-matcher "<[[:space:]]*script[[:space:]]*[[:space:]]*>"
+    :tail-matcher "</[[:space:]]*script[[:space:]]*[[:space:]]*>"
+    :head-mode 'host
+    :tail-mode 'host)
+
+  (define-innermode poly-vue-typescript-innermode
+    :mode 'typescript-mode
+    :head-matcher "<[[:space:]]*script[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*ts[[:space:]]*[\"'][[:space:]]*>"
+    :tail-matcher "</[[:space:]]*script[[:space:]]*[[:space:]]*>"
+    :head-mode 'host
+    :tail-mode 'host)
+
+  (define-innermode poly-vue-javascript-innermode
+    :mode 'js2-mode
+    :head-matcher "<[[:space:]]*script[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*js[[:space:]]*[\"'][[:space:]]*>"
+    :tail-matcher "</[[:space:]]*script[[:space:]]*[[:space:]]*>"
+    :head-mode 'host
+    :tail-mode 'host)
+
+  (define-auto-innermode poly-vue-template-tag-lang-innermode
+    :head-matcher "<[[:space:]]*template[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*[[:alpha:]]+[[:space:]]*[\"'][[:space:]]*>"
+    :tail-matcher "</[[:space:]]*template[[:space:]]*[[:space:]]*>"
+    :mode-matcher (cons  "<[[:space:]]*template[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*\\([[:alpha:]]+\\)[[:space:]]*[\"'][[:space:]]*>" 1)
+    :head-mode 'host
+    :tail-mode 'host)
+
+  (define-auto-innermode poly-vue-script-tag-lang-innermode
+    :head-matcher "<[[:space:]]*script[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*[[:alpha:]]+[[:space:]]*[\"'][[:space:]]*>"
+    :tail-matcher "</[[:space:]]*script[[:space:]]*[[:space:]]*>"
+    :mode-matcher (cons  "<[[:space:]]*script[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*\\([[:alpha:]]+\\)[[:space:]]*[\"'][[:space:]]*>" 1)
+    :head-mode 'host
+    :tail-mode 'host)
+
+  (define-auto-innermode poly-vue-style-tag-lang-innermode
+    :head-matcher "<[[:space:]]*style[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*[[:alpha:]]+[[:space:]]*[\"'][[:space:]]*>"
+    :tail-matcher "</[[:space:]]*style[[:space:]]*[[:space:]]*>"
+    :mode-matcher (cons  "<[[:space:]]*style[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*\\([[:alpha:]]+\\)[[:space:]]*[\"'][[:space:]]*>" 1)
+    :head-mode 'host
+    :tail-mode 'host)
+
+  (define-innermode poly-vue-style-innermode
+    :mode 'css-mode
+    :head-matcher "<[[:space:]]*style[[:space:]]*[[:space:]]*>"
+    :tail-matcher "</[[:space:]]*style[[:space:]]*[[:space:]]*>"
+    :head-mode 'host
+    :tail-mode 'host)
+
+  (define-polymode vue-mode
+    :hostmode 'poly-sgml-hostmode
+    :innermodes '(
+                  poly-vue-typescript-innermode
+                  poly-vue-javascript-innermode
+                  poly-vue-template-tag-lang-innermode
+                  poly-vue-script-tag-lang-innermode
+                  poly-vue-style-tag-lang-innermode
+                  poly-vue-template-innermode
+                  poly-vue-script-innermode
+                  poly-vue-style-innermode
+                  )))
+#+end_src
+* Editing
+** Spellcheck
+#+begin_src emacs-lisp
+(setq ispell-dictionary "en_US")
+#+end_src
+* Keybindings
+#+begin_src emacs-lisp
+(define-key input-decode-map [?\C-i] [C-i])
+(map! :i "<C-i>" #'doom/dumb-indent)
+#+end_src
+* Org Mode
+#+begin_src emacs-lisp
+(setq org-directory "~/Library/Documents/Org/")
+(setq org-agenda-files (list "~/Library/Documents/Org/Agenda"))
+#+end_src

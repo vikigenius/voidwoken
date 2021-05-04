@@ -10,5 +10,9 @@
 ;; (package! flycheck :recipe (:host github :repo "flycheck/flycheck" :branch "use-flake8rc-working-directory"))
 (package! jsonnet-mode :recipe (:host github :repo "mgyucht/jsonnet-mode"))
 (package! ox-ipynb :recipe (:host github :repo "jkitchin/ox-ipynb"))
-(package! lsp-mode :recipe (:local-repo "lsp-mode" :no-byte-compile t))
-;;(unpin! lsp-mode)
+;; (package! lsp-mode :recipe (:local-repo "lsp-mode" :no-byte-compile t))
+;; (unpin! lsp-mode)
+
+;; (package! lsp-mode :recipe (:host github :repo "yyoncho/lsp-mode" :branch "diag-filter"))
+(unpin! lsp-mode)
+(unpin! lsp-ui)

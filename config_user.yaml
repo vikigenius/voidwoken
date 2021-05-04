@@ -25,12 +25,12 @@ dotfiles:
     src:
     dst:
     actions:
-    - void-boostrap
+    - void-bootstrap
   01_d_python:
     src:
     dst:
     actions:
-    - python-setup
+    - pyenv-install
   d_zsh:
     src: config/zsh
     dst: ~/.config/zsh
@@ -123,6 +123,9 @@ dotfiles:
     src: config/zathura
     dst: ~/.config/zathura
     chmod: '700'
+  d_npm:
+    src: config/npm
+    dst: ~/.config/npm
 profiles:
   stealthlabs:
     dotfiles:
