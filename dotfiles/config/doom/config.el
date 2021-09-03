@@ -15,8 +15,6 @@
   `(markdown-code-face :background ,(doom-darken 'bg 0.075))
   `(font-lock-variable-name-face :foreground ,(doom-lighten 'magenta 0.6)))
 
-(add-to-list 'doom-unicode-extra-fonts "icomoon" t)
-
 (after! flycheck
   (setq
    doom-modeline-checker-simple-format nil
@@ -31,8 +29,24 @@
 (setq
  poetry-tracking-strategy 'switch-buffer
  pyenv-mode-mode-line-format ""
- python-indent-def-block-scale 1)
+ python-indent-def-block-scale 1
+ lsp-pylsp-plugins-flake8-enabled nil
+ lsp-pylsp-plugins-mccabe-enabled nil
+ lsp-pylsp-plugins-pydocstyle-enabled nil)
 (use-package! ox-ipynb :after ox)
+
+(defvar-local my/flycheck-local-cache nil)
+
+(defun my/flycheck-checker-get (fn checker property)
+  (or (alist-get property (alist-get checker my/flycheck-local-cache))
+      (funcall fn checker property)))
+
+(advice-add 'flycheck-checker-get :around 'my/flycheck-checker-get)
+
+(add-hook 'lsp-managed-mode-hook
+          (lambda ()
+            (when (derived-mode-p 'python-mode)
+              (setq my/flycheck-local-cache '((lsp . ((next-checkers . (python-flake8)))))))))
 ;; (add-hook 'python-mode-hook 'set-newline-and-indent)
 
 (setq rustic-indent-offset 4)
@@ -54,14 +68,15 @@
              (lsp:set-publish-diagnostics-params-diagnostics
               params
               (or (seq-filter (-lambda ((&Diagnostic :source? :code?))
-                                (and (not (string= "typescript" source?))
-                                     (not (string= "6133" code?))))
+                                (not (and (string= "typescript" source?)
+                                          (string= "6133" (prin1-to-string code?)))))
 
                               diagnostics)
                   []))
              params)
 
-  (setq lsp-diagnostic-filter 'my/filter-typescript ))
+  (setq lsp-diagnostic-filter 'my/filter-typescript )
+  (setf (alist-get 'web-mode lsp--formatting-indent-alist) 'web-mode-code-indent-offset))
 
 (define-derived-mode vue-mode web-mode "Vue"
   "A major mode derived from web-mode, for editing .vue files with LSP support.")
