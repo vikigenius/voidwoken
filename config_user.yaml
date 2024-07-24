@@ -126,10 +126,14 @@ dotfiles:
   d_npm:
     src: config/npm
     dst: ~/.config/npm
+  d_wezterm:
+    src: config/wezterm
+    dst: ~/.config/wezterm
 profiles:
   stealthlabs:
     dotfiles:
     - ALL
+    - d_wezterm
   thinkpad:
     dotfiles:
     - ALL
