@@ -13,6 +13,8 @@ export SXHKD_SHELL=/bin/sh
 
 export NOTMUCH_CONFIG=$XDG_CONFIG_HOME/notmuch/config
 export MAILDIR=$XDG_DATA_HOME/mail
+export NNN_TERMINAL=wezterm
+export NNN_FIFO=/tmp/nnn.fifo
 
 path_prepend() {
     case ":$PATH:" in

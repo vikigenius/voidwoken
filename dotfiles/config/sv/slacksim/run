@@ -1,0 +1,6 @@
+#!/bin/sh
+
+sleep 2m
+xdotool key "Super_L+1"
+sleep 10s
+xdotool key "Super_L+5"

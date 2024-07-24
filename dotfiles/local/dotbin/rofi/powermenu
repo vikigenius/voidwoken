@@ -22,6 +22,7 @@ case $menu_choice in
         ;;
     $lock)
         light-locker-command -l
+        # greetd -c /etc/greetd/lock_config.toml
         ;;
     $log_out)
         bspc quit

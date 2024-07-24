@@ -1,12 +1,19 @@
-#!/bin/sh
+#!/bin/bash
 
 barname=$DESKTOP_SESSION$(hostname)
 
-# Terminate already running bar instances
-killall -q polybar
+while pgrep -u $UID -x polybar > /dev/null; do sleep 1; done
 
-# Wait until the processes have been shut down
-while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
+# TODO https://github.com/polybar/polybar/discussions/2697
+# Wait for pulseaudio to be online
 
-touch $barname
+pstat=$(pgrep -u $UID -x pulseaudio | xargs --no-run-if-empty ps -o stat --no-headers fp)
+
+if [ ${pstat:0:1} == "D" ]; then
+    echo 'pulse not ready'
+    exit 1
+fi
+
+echo 'pulse ready'
+
 exec polybar $barname 2>&1

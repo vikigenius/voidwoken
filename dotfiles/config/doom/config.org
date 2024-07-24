@@ -1,4 +1,17 @@
 #+TITLE: Config
+* Personal Information
+#+begin_src emacs-lisp
+(setq user-full-name "vikigenius"
+      user-mail-address "master.bvik@gmail.com")
+#+end_src
+* Better Defaults
+** Simple Settings
+#+begin_src emacs-lisp
+(setq-default
+  delete-by-moving-to-trash t                      ; Delete files to trash
+  window-combination-resize t                      ; take new window space from all other windows (not just current)
+  x-stretch-cursor t)                              ; Stretch cursor to the glyph width
+#+end_src
 * Appearance
 #+begin_src emacs-lisp
 (defun doom-private-setup-org ()
@@ -50,13 +63,34 @@ General lsp settings
  lsp-ui-sideline-delay 0.5)
 #+end_src
 ** Languages
+Doom uses dtrt-indent to automatically detect indendation. It messes up a lot of things. Use .editorconfig to override
+*** CSS
+#+begin_src emacs-lisp
+(setq
+ web-mode-css-indent-offset 2
+ css-indent-offset 2)
+#+end_src
+*** Lua
+#+begin_src emacs-lisp
+(setq
+ lua-indent-nested-block-content-align nil
+ lua-indent-close-paren-align nil)
+(defun rgc-lua-at-most-one-indent (old-function &rest arguments)
+  (let ((old-res (apply old-function arguments)))
+    (if (> old-res 2) 2 old-res)))
+
+(advice-add #'lua-calculate-indentation-block-modifier
+            :around #'rgc-lua-at-most-one-indent)
+#+end_src
 *** Python
 #+begin_src emacs-lisp
 (set-file-template! 'python-mode :trigger "utf8")
 (setq
+ flycheck-python-mypy-config nil
  poetry-tracking-strategy 'switch-buffer
  pyenv-mode-mode-line-format ""
  python-indent-def-block-scale 1
+ ;; lsp-pylsp-server-command '("poetry" "run" "pylsp")
  lsp-pylsp-plugins-flake8-enabled nil
  lsp-pylsp-plugins-mccabe-enabled nil
  lsp-pylsp-plugins-pydocstyle-enabled nil)
@@ -73,12 +107,15 @@ General lsp settings
 (add-hook 'lsp-managed-mode-hook
           (lambda ()
             (when (derived-mode-p 'python-mode)
-              (setq my/flycheck-local-cache '((lsp . ((next-checkers . (python-flake8)))))))))
+              (setq my/flycheck-local-cache '((lsp . ((next-checkers . (python-flake8 python-mypy)))))))))
 ;; (add-hook 'python-mode-hook 'set-newline-and-indent)
 #+end_src
 *** Rust
+We do not want to enable lsp-rust-all-features globally
+TODO Disable this and do it on a project basis using .dir-locals.el
 #+begin_src emacs-lisp
-(setq rustic-indent-offset 4)
+(setq rustic-indent-offset 4
+  lsp-rust-analyzer-proc-macro-enable t)
 #+end_src
 *** Jsonnet
 #+begin_src emacs-lisp
@@ -101,7 +138,8 @@ This is a language service plugin that serves as an alternative to the eslint la
 We set the indendation levels to 2.
 #+begin_src emacs-lisp
 (setq web-mode-markup-indent-offset 2
-      web-mode-code-indent-offset 2)
+      web-mode-code-indent-offset 2
+      typescript-indent-level 2)
 #+end_src
 
 Enable logging for tsserver:
@@ -131,7 +169,7 @@ This is how we disable the diagnostics: (supported after [[https://github.com/em
                   []))
              params)
 
-  (setq lsp-diagnostic-filter 'my/filter-typescript )
+  ;;;(setq lsp-diagnostic-filter 'my/filter-typescript )
   (setf (alist-get 'web-mode lsp--formatting-indent-alist) 'web-mode-code-indent-offset))
 #+end_src
 
@@ -151,7 +189,7 @@ Disable template diagnostics from vls, so that eslint can take care of it.
   "A major mode derived from web-mode, for editing .vue files with LSP support.")
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
 (defun vue-setup()
-  (when (featurep! :tools lsp)
+  (when (modulep! :tools lsp)
     (lsp!)
     (setq lsp-vetur-validation-template nil)))
 
@@ -160,7 +198,7 @@ Disable template diagnostics from vls, so that eslint can take care of it.
 Alternatively we can use polymode:
 #+begin_src emacs-lisp :tangle no
 (defun polyvue-setup ()
-  (when (featurep! :tools lsp) (lsp!))
+  (when (modulep! :tools lsp) (lsp!))
   ;;(when (and (boundp 'spell-fu-mode) spell-fu-mode) (spell-fu-mode-disable))
 )
 
@@ -239,6 +277,25 @@ Alternatively we can use polymode:
                   poly-vue-style-innermode
                   )))
 #+end_src
+*** Web
+We use the following snippet to remove duplicate right angles in nxml mode: see https://github.com/doomemacs/doomemacs/issues/6331
+#+begin_src emacs-lisp
+(defadvice! --nxml-electric-slash-remove-duplicate-right-angle-and-indent (func arg)
+  :around 'nxml-electric-slash
+  (let ((point-before (point)))
+    (funcall func arg)
+    (unless (equal (+ 1 point-before) (point))
+      (delete-char 1)
+      (funcall indent-line-function))))
+#+end_src
+* Research
+** Bibliorgraphy
+#+begin_src emacs-lisp
+(setq org-cite-global-bibliography (expand-file-name "~/Library/Documents/My Library.bib")
+      org-cite-csl-styles-dir (expand-file-name "~/.local/share/zotero/styles")
+      citar-bibliography (expand-file-name "~/Library/Documents/My Library.bib")
+      citar-file-parser-functions '(citar-file--parser-default citar-file--parser-triplet))
+#+end_src
 * Editing
 ** Spellcheck
 #+begin_src emacs-lisp
@@ -251,6 +308,23 @@ Alternatively we can use polymode:
 #+end_src
 * Org Mode
 #+begin_src emacs-lisp
-(setq org-directory "~/Library/Documents/Org/")
-(setq org-agenda-files (list "~/Library/Documents/Org/Agenda"))
+(setq org-directory "~/Library/Documents/Org/"
+      org-agenda-files (list "~/Library/Documents/Org/Agenda"))
+(with-eval-after-load 'org-roam
+    (add-hook! 'after-save-hook
+           (defun org-rename-to-new-title ()
+             (when-let*
+                 ((old-file (buffer-file-name))
+                  (is-roam-file (org-roam-file-p old-file))
+                  (file-node (save-excursion
+                               (goto-char 1)
+                               (org-roam-node-at-point)))
+                  (slug (org-roam-node-slug file-node))
+                  (new-file (expand-file-name (concat slug ".org")))
+                  (different-name? (not (string-equal old-file new-file))))
+               (rename-buffer new-file)
+               (rename-file old-file new-file)
+               (set-visited-file-name new-file)
+               (set-buffer-modified-p nil)))))
+(setq org-roam-database-connector 'sqlite-builtin)
 #+end_src

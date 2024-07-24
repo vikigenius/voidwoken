@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 # set the background
 sh $HOME/.fehbg
 
@@ -19,7 +18,7 @@ bspc rule -r '*'
 
 bspc rule -a Pinentry state=floating center=on
 bspc rule -a Emacs split_ratio=0.28 state=tiled
-bspc rule -a Firefox split_ratio=0.32
+# bspc rule -a Firefox split_ratio=0.32
 bspc rule -a feh state=fullscreen
 bspc rule -a 'Emacs:org*' state=floating
 bspc rule -a 'Emacs:scratch' state=floating
@@ -31,7 +30,9 @@ for file in $XDG_CONFIG_HOME/bspwm/rc.d/*; do
 done
 
 # start the polybar service
-svx start panel
+# Panel waits for pulse, so we just set status to up and not wait for it
+svx up panel
+# $HOME/.config/polybar/launch.sh
 
 # start the sxhkd service
 svx start sxhkd

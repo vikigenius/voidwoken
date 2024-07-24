@@ -54,12 +54,17 @@ super + shift + m
     bspc node -n last.!automatic
 
 # Send to desktop
+# Note that bspc desktop -f 1
+# refers to desktop labelled 1
+# bspc desktop -f ^1 referse to dexktop with index 1
+# To do that use something like
+#    bspc desktop -f '^{1-9,10}'
 super + shift + {1-9,0}
-    bspc node -d '^{1-9,10}' --follow
+    bspc node -d '{1-9,10}' --follow
 
 # Focus desktop
 super + {1-9,0}
-    bspc desktop -f '^{1-9,10}'
+    bspc desktop -f '{1-9,10}'
 
 # Send to monitor
 super + shift + equal

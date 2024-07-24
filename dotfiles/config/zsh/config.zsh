@@ -2,8 +2,17 @@
 # History
 #
 
+export HISTSIZE=100000000
+export SAVEHIST=$HISTSIZE
+
 # Remove older command from the history if a duplicate is to be added.
 setopt HIST_IGNORE_ALL_DUPS
+
+# Append into history file
+setopt APPEND_HISTORY
+
+# Add timing information for history
+setopt EXTENDED_HISTORY
 
 #
 # Input/output

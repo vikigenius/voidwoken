@@ -17,7 +17,7 @@ disabled = true
 disabled = true
 
 [python]
-symbol = " "
+symbol = " "
 
 [conda]
 symbol = " "

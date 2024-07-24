@@ -2,5 +2,5 @@
 
 REPO_DIR=$HOME/.local/lib/pyenv
 
-test -d $REPO_DIR || git clone https://github.com/pyenv/pyenv.git $REOP_DIR
+test -d $REPO_DIR || git clone https://github.com/pyenv/pyenv.git $REPO_DIR
 ln -svf $REPO_DIR/bin/pyenv $HOME/.local/bin/
