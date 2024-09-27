@@ -162,7 +162,7 @@
        ;;purescript        ; javascript, but functional
        (python
         +lsp
-        +basedpyright
+        +pyright
         +rye
         +conda)            ; beautiful is better than ugly
        (renpy)
