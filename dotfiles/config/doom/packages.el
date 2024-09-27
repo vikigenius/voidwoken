@@ -12,8 +12,9 @@
 (package! ox-ipynb :recipe (:host github :repo "jkitchin/ox-ipynb"))
 
 (package! emacsql :pin "c1a4407")
-;; (package! lsp-mode :recipe (:local-repo "lsp-mode" :no-byte-compile t))
 (unpin! lsp-mode)
+;; (package! lsp-mode :recipe (:local-repo "lsp-mode" :build (:not compile)))
+;; (package! lsp-mode :pin "213f207")
 (package! emacsql-sqlite-builtin)
 (unpin! emacsql-sqlite-builtin)
 (unpin! org-roam)

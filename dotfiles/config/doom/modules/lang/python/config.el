@@ -120,7 +120,7 @@
     (add-hook 'anaconda-mode-hook #'evil-normalize-keymaps))
   (map! :localleader
         :map anaconda-mode-map
-        :prefix "g"
+        :prefix ("g" . "conda")
         "d" #'anaconda-mode-find-definitions
         "h" #'anaconda-mode-show-doc
         "a" #'anaconda-mode-find-assignments
@@ -162,7 +162,7 @@
 
   (map! :localleader
         :map nose-mode-map
-        :prefix "t"
+        :prefix ("t" . "test")
         "r" #'nosetests-again
         "a" #'nosetests-all
         "s" #'nosetests-one
@@ -215,6 +215,26 @@
 (use-package! conda
   :when (modulep! +conda)
   :after python
+  :preface
+  (setq conda-anaconda-home (getenv "ANACONDA_HOME")
+    conda-home-candidates
+    (list "~/.anaconda"
+          "~/.anaconda3"
+          "~/.miniconda"
+          "~/.miniconda3"
+          "~/.miniforge3"
+          "~/anaconda3"
+          "~/miniconda3"
+          "~/miniforge3"
+          "~/opt/miniconda3"
+          "/usr/bin/anaconda3"
+          "/usr/local/anaconda3"
+          "/usr/local/miniconda3"
+          "/usr/local/Caskroom/miniconda/base"
+          "~/.conda"))
+  ;; HACK: `conda-anaconda-home's initialization can throw an error if none of
+  ;;   `conda-home-candidates' exist, so unset it early.
+  ;; REVIEW: Fix this upstream
   :config
   ;; The location of your anaconda home will be guessed from a list of common
   ;; possibilities, starting with `conda-anaconda-home''s default value (which
@@ -223,21 +243,8 @@
   ;; If none of these work for you, `conda-anaconda-home' must be set
   ;; explicitly. Afterwards, run M-x `conda-env-activate' to switch between
   ;; environments
-  (or (cl-loop for dir in (list conda-anaconda-home
-                                "~/.anaconda"
-                                "~/.miniconda"
-                                "~/.miniconda3"
-                                "~/.miniforge3"
-                                "~/anaconda3"
-                                "~/miniconda3"
-                                "~/miniforge3"
-                                "~/opt/miniconda3"
-                                "/usr/bin/anaconda3"
-                                "/usr/local/anaconda3"
-                                "/usr/local/miniconda3"
-                                "/usr/local/Caskroom/miniconda/base"
-                                "~/.conda")
-               if (file-directory-p dir)
+  (or (cl-loop for dir in (cons conda-anaconda-home conda-home-candidates)
+               if (and dir (file-directory-p dir))
                return (setq conda-anaconda-home (expand-file-name dir)
                             conda-env-home-directory (expand-file-name dir)))
       (message "Cannot find Anaconda installation"))
@@ -300,24 +307,10 @@
     (after! python
       (setq lsp-python-ms-python-executable-cmd python-shell-interpreter)))
 
-  (use-package! lsp-basedpyright
-    :when (modulep! +basedpyright)
-    :after lsp-mode)
-
   (use-package! lsp-pyright
+    :when (modulep! +lsp)
     :when (modulep! +pyright)
-    :after lsp-mode
-    :preface
-    (defun lsp-pyright/filter-unnecessary-info (params _workspace)
-      (let ((diagnostics (lsp:publish-diagnostics-params-diagnostics params)))
-        (lsp:set-publish-diagnostics-params-diagnostics
-         params
-         (or (seq-filter (lambda (diagnostic)
-                           (let ((source (lsp:diagnostic-source? diagnostic))
-                                 (severity (lsp:diagnostic-severity? diagnostic)))
-                             (or (not (string= "Pyright" source))
-                                 (<= severity lsp/diagnostic-severity-information))))
-                         diagnostics)
-             []))
-        params))
-    :config (setq lsp-diagnostic-filter 'lsp-pyright/filter-unnecessary-info)))
+    :defer t
+    :init
+    (when-let ((exe (executable-find "basedpyright")))
+      (setq lsp-pyright-langserver-command exe)))

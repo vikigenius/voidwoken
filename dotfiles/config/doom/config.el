@@ -26,10 +26,13 @@
 (after! flycheck
   (setq
    doom-modeline-checker-simple-format nil
-   flycheck-idle-change-delay 10
+   flycheck-idle-change-delay 0.5
+   flycheck-display-errors-delay 0.9
    flycheck-check-syntax-automatically '(mode-enabled save idle-change)))
 
 (setq
+ lsp-log-io t
+ lsp-diagnostic-clean-after-change t
  lsp-idle-delay 0.5
  lsp-ui-sideline-delay 0.5)
 
@@ -72,6 +75,9 @@
             (when (derived-mode-p 'python-mode)
               (setq my/flycheck-local-cache '((lsp . ((next-checkers . (python-flake8 python-mypy)))))))))
 ;; (add-hook 'python-mode-hook 'set-newline-and-indent)
+
+(after! lsp-mode
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.aws-sam\\'"))
 
 (setq rustic-indent-offset 4
   lsp-rust-analyzer-proc-macro-enable t)
