@@ -4,16 +4,15 @@ xdg-user-dirs-update
 xsetroot -cursor_name left_ptr
 xrdb -merge $HOME/.Xresources
 
-
 # test for an existing bus daemon, just to be safe
-if test -z "$DBUS_SESSION_BUS_ADDRESS" ; then
+if test -z "$DBUS_SESSION_BUS_ADDRESS"; then
   # if not found, launch a new one
-  eval `dbus-launch --sh-syntax --exit-with-session`
+  eval $(dbus-launch --sh-syntax --exit-with-session)
   echo "D-Bus per-session daemon address is: $DBUS_SESSION_BUS_ADDRESS"
 fi
 
 echo "Starting pulse and user services"
 
 # Launch all dbus related services
-start-pulseaudio-x11 &
+# start-pulseaudio-x11 &
 runsvdir -P $XDG_SERVICE_DIR 'log:.................................................................................................................' &

@@ -1,0 +1,21 @@
+/* -*- mode: css; -*- */
+configuration {
+  modi: ["drun", "window", "run"];
+  icon-theme:       "Papirus-Dark";
+  show-icons:       true;
+  cycle:            true;
+  terminal:         "alacritty";
+  drun-display-format: "{icon} {name}";
+  disable-history:  false;
+  sidebar-mode:     false;
+  display-drun: " ";
+  display-run: " ";
+  display-window: " ";
+
+  /* Vim-esque C-j/C-k as up/down in rofi */
+  kb-accept-entry: "Return,Control+m,KP_Enter";
+  kb-row-down: "Down,Control+n,Control+j";
+  kb-remove-to-eol: "";
+  kb-row-up: "Up,Control+p,Control+k";
+}
+

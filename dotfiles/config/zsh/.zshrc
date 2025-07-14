@@ -43,3 +43,6 @@ autoload -Uz xevkey
 case $(tty) in /dev/pts/[0-9]*)
     eval "$(starship init zsh)" ;;
 esac
+
+# bun completions
+[ -s "/home/void/.local/share/reflex/bun/_bun" ] && source "/home/void/.local/share/reflex/bun/_bun"

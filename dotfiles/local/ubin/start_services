@@ -1,0 +1,4 @@
+#!/bin/sh
+
+pgrep -u "$USER" -fx "runsvdir -P $XDG_SERVICE_DIR .*" >/dev/null ||
+  runsvdir -P "$XDG_SERVICE_DIR" 'log:.................................................................................................................' &

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Check if gtklock is already running for this user
+if pgrep -u "$USER" -x gtklock > /dev/null; then
+    exit 0
+fi
+
+# Run gtklock in daemon mode
+exec gtklock -d

@@ -11,7 +11,6 @@ variables:
   emacs_dir: "{{@@ env['HOME'] @@}}/.config/emacs"
 actions:
   pre:
-    pluginstall: actions/nvim/pluginstall
     doom-install: actions/emacs/doominstall
     void-bootstrap: actions/void/bootstrap
     pyenv-install: actions/python/pyenvinstall
@@ -55,29 +54,9 @@ dotfiles:
   d_nvim:
     src: config/nvim
     dst: ~/.config/nvim
-    actions:
-    - vim-pluginstall
-    - pluginstall
   f_profile:
     src: profile
     dst: ~/.profile
-  f_xresources:
-    src: Xresources
-    dst: ~/.Xresources
-  d_tmux:
-    src: config/tmux
-    dst: ~/.config/tmux
-    actions:
-    - tpminstall
-  d_polybar:
-    src: config/polybar
-    dst: ~/.config/polybar
-  d_bspwm:
-    src: config/bspwm
-    dst: ~/.config/bspwm
-  d_sxhkd:
-    src: config/sxhkd
-    dst: ~/.config/sxhkd
   d_sv:
     src: config/sv
     dst: ~/.config/sv
@@ -99,9 +78,6 @@ dotfiles:
   f_xprofile:
     src: xprofile
     dst: ~/.xprofile
-  d_picom:
-    src: config/picom
-    dst: ~/.config/picom
   d_rofi:
     src: config/rofi
     dst: ~/.config/rofi

@@ -19,20 +19,27 @@
   (electric-indent-local-mode -1))
 
 (setq
- doom-theme 'doom-dracula
+ doom-theme 'doom-void
  doom-font "Source Code Pro:pixelsize=16:antialias=true:autohint=true"
  doom-variable-pitch-font (font-spec :family "Arvo" :style "Regular")
  org-hide-emphasis-markers t)
 
 (add-hook 'org-mode-hook #'doom-private-setup-org)
 
-(custom-theme-set-faces! 'doom-dracula
+;;(custom-theme-set-faces! 'doom-dracula
   ;;`(font-lock-comment-face :foreground , (doom-darken 'yellow 0.5))
-  `(markdown-code-face :background ,(doom-darken 'bg 0.075))
-  `(font-lock-variable-name-face :foreground ,(doom-lighten 'magenta 0.6)))
+;;  `(markdown-code-face :background ,(doom-darken 'bg 0.075))
+;;  `(font-lock-variable-name-face :foreground ,(doom-lighten 'magenta 0.6)))
 
 #+end_src
+
 * Development
+** Formatters
+Debugging Formatters
+#+begin_src emacs-lisp :tangle no
+(setq apheleia-log-only-errors nil)
+(setq apheleia-log-debug-info t)
+#+end_src
 ** Syntax Checkers
 #+begin_src emacs-lisp
 (after! flycheck
@@ -60,7 +67,6 @@ To add other checkers to lsp-python use
 General lsp settings
 #+begin_src emacs-lisp
 (setq
- lsp-log-io t
  lsp-diagnostic-clean-after-change t
  lsp-idle-delay 0.5
  lsp-ui-sideline-delay 0.5)
@@ -93,7 +99,6 @@ Doom uses dtrt-indent to automatically detect indendation. It messes up a lot of
  poetry-tracking-strategy 'switch-buffer
  pyenv-mode-mode-line-format ""
  python-indent-def-block-scale 1
- ;; lsp-pylsp-server-command '("poetry" "run" "pylsp")
  lsp-pylsp-plugins-flake8-enabled nil
  lsp-pylsp-plugins-mccabe-enabled nil
  lsp-pylsp-plugins-pydocstyle-enabled nil)
@@ -116,6 +121,14 @@ Doom uses dtrt-indent to automatically detect indendation. It messes up a lot of
 (after! lsp-mode
   (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.aws-sam\\'"))
 #+end_src
+
+We disable corfu completion in python repl due to these issues.
+- [[https://github.com/doomemacs/doomemacs/issues/7978][corfu autocompletion slow in python repl]]
+- [[https://github.com/minad/corfu/issues/330][corfu inserts unexpected characters in python stdin]]
+#+begin_src emacs-lisp
+(setq-hook! 'inferior-python-mode-hook
+  corfu-auto nil)
+#+end_src
 *** Rust
 We do not want to enable lsp-rust-all-features globally
 TODO Disable this and do it on a project basis using .dir-locals.el
@@ -133,7 +146,21 @@ TODO Disable this and do it on a project basis using .dir-locals.el
 
 (setq json-reformat:indent-width 2) ;; Only for json not for jsonnet
 #+end_src
+*** Just Mode
+#+begin_src emacs-lisp
+(use-package! just-mode
+  :defer t
+  :config
+  (setq just-indent-offset 2))
+#+end_src
 *** TypeScript (TSX)
+#+begin_src emacs-lisp
+(use-package! lsp-biome
+  :after lsp-mode
+  :config
+  (set-formatter! 'biome '("npx" "biome" "format" "--stdin-file-path" filepath) :modes '(typescript-tsx-mode typescript-mode astro-ts-mode)))
+#+end_src
+
 This is a language service plugin that serves as an alternative to the eslint language server extension provided by vscode.
 #+begin_src emacs-lisp :tangle no
 (setq lsp-clients-typescript-plugins
@@ -163,19 +190,16 @@ This is how we set a custom configFile for eslint
 This is how we disable the diagnostics: (supported after [[https://github.com/emacs-lsp/lsp-mode/pull/2596][lsp-mode#2596]] is merged).
 #+begin_src emacs-lisp
 (after! lsp-mode
-  (lsp-defun my/filter-typescript ((params &as &PublishDiagnosticsParams :diagnostics)
-                                   _workspace)
-             (lsp:set-publish-diagnostics-params-diagnostics
-              params
-              (or (seq-filter (-lambda ((&Diagnostic :source? :code?))
-                                (not (and (string= "typescript" source?)
-                                          (string= "6133" (prin1-to-string code?)))))
+  (lsp-defun voidfilter/filter-unnecessary ((params &as &PublishDiagnosticsParams :diagnostics) _workspace)
+    (lsp:set-publish-diagnostics-params-diagnostics
+        params
+        (or (seq-filter (-lambda ((&Diagnostic :severity?))
+                          (< severity? 4))
+                        diagnostics)
+            []))
+    params)
 
-                              diagnostics)
-                  []))
-             params)
-
-  ;;;(setq lsp-diagnostic-filter 'my/filter-typescript )
+  (setq lsp-diagnostic-filter 'voidfilter/filter-unnecessary)
   (setf (alist-get 'web-mode lsp--formatting-indent-alist) 'web-mode-code-indent-offset))
 #+end_src
 
@@ -186,102 +210,6 @@ Make lsp respect web mode indendation variables
   (if (provided-mode-derived-p mode 'web-mode)
       'tab-width
     (funcall orig-fn mode)))
-#+end_src
-*** Vue
-We can use ~web-mode~ for highlighting. We can also install multiple-servers vscode-eslint and vls.
-Disable template diagnostics from vls, so that eslint can take care of it.
-#+begin_src emacs-lisp
-(define-derived-mode vue-mode web-mode "Vue"
-  "A major mode derived from web-mode, for editing .vue files with LSP support.")
-(add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
-(defun vue-setup()
-  (when (modulep! :tools lsp)
-    (lsp!)
-    (setq lsp-vetur-validation-template nil)))
-
-(add-hook 'vue-mode-hook #'vue-setup)
-#+end_src
-Alternatively we can use polymode:
-#+begin_src emacs-lisp :tangle no
-(defun polyvue-setup ()
-  (when (modulep! :tools lsp) (lsp!))
-  ;;(when (and (boundp 'spell-fu-mode) spell-fu-mode) (spell-fu-mode-disable))
-)
-
-(use-package! polymode
-  :ensure t
-  :defer t
-  :hook (vue-mode . polyvue-setup)
-  :mode ("\\.vue\\'" . vue-mode)
-  :config
-  (define-innermode poly-vue-template-innermode
-    :mode 'html-mode
-    :head-matcher "<[[:space:]]*template[[:space:]]*[[:space:]]*>"
-    :tail-matcher "</[[:space:]]*template[[:space:]]*[[:space:]]*>"
-    :head-mode 'host
-    :tail-mode 'host)
-
-  (define-innermode poly-vue-script-innermode
-    :mode 'js-mode
-    :head-matcher "<[[:space:]]*script[[:space:]]*[[:space:]]*>"
-    :tail-matcher "</[[:space:]]*script[[:space:]]*[[:space:]]*>"
-    :head-mode 'host
-    :tail-mode 'host)
-
-  (define-innermode poly-vue-typescript-innermode
-    :mode 'typescript-mode
-    :head-matcher "<[[:space:]]*script[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*ts[[:space:]]*[\"'][[:space:]]*>"
-    :tail-matcher "</[[:space:]]*script[[:space:]]*[[:space:]]*>"
-    :head-mode 'host
-    :tail-mode 'host)
-
-  (define-innermode poly-vue-javascript-innermode
-    :mode 'js2-mode
-    :head-matcher "<[[:space:]]*script[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*js[[:space:]]*[\"'][[:space:]]*>"
-    :tail-matcher "</[[:space:]]*script[[:space:]]*[[:space:]]*>"
-    :head-mode 'host
-    :tail-mode 'host)
-
-  (define-auto-innermode poly-vue-template-tag-lang-innermode
-    :head-matcher "<[[:space:]]*template[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*[[:alpha:]]+[[:space:]]*[\"'][[:space:]]*>"
-    :tail-matcher "</[[:space:]]*template[[:space:]]*[[:space:]]*>"
-    :mode-matcher (cons  "<[[:space:]]*template[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*\\([[:alpha:]]+\\)[[:space:]]*[\"'][[:space:]]*>" 1)
-    :head-mode 'host
-    :tail-mode 'host)
-
-  (define-auto-innermode poly-vue-script-tag-lang-innermode
-    :head-matcher "<[[:space:]]*script[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*[[:alpha:]]+[[:space:]]*[\"'][[:space:]]*>"
-    :tail-matcher "</[[:space:]]*script[[:space:]]*[[:space:]]*>"
-    :mode-matcher (cons  "<[[:space:]]*script[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*\\([[:alpha:]]+\\)[[:space:]]*[\"'][[:space:]]*>" 1)
-    :head-mode 'host
-    :tail-mode 'host)
-
-  (define-auto-innermode poly-vue-style-tag-lang-innermode
-    :head-matcher "<[[:space:]]*style[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*[[:alpha:]]+[[:space:]]*[\"'][[:space:]]*>"
-    :tail-matcher "</[[:space:]]*style[[:space:]]*[[:space:]]*>"
-    :mode-matcher (cons  "<[[:space:]]*style[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*\\([[:alpha:]]+\\)[[:space:]]*[\"'][[:space:]]*>" 1)
-    :head-mode 'host
-    :tail-mode 'host)
-
-  (define-innermode poly-vue-style-innermode
-    :mode 'css-mode
-    :head-matcher "<[[:space:]]*style[[:space:]]*[[:space:]]*>"
-    :tail-matcher "</[[:space:]]*style[[:space:]]*[[:space:]]*>"
-    :head-mode 'host
-    :tail-mode 'host)
-
-  (define-polymode vue-mode
-    :hostmode 'poly-sgml-hostmode
-    :innermodes '(
-                  poly-vue-typescript-innermode
-                  poly-vue-javascript-innermode
-                  poly-vue-template-tag-lang-innermode
-                  poly-vue-script-tag-lang-innermode
-                  poly-vue-style-tag-lang-innermode
-                  poly-vue-template-innermode
-                  poly-vue-script-innermode
-                  poly-vue-style-innermode
-                  )))
 #+end_src
 *** Web
 We use the following snippet to remove duplicate right angles in nxml mode: see https://github.com/doomemacs/doomemacs/issues/6331

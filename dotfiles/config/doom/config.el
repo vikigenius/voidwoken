@@ -11,17 +11,17 @@
   (electric-indent-local-mode -1))
 
 (setq
- doom-theme 'doom-dracula
+ doom-theme 'doom-void
  doom-font "Source Code Pro:pixelsize=16:antialias=true:autohint=true"
  doom-variable-pitch-font (font-spec :family "Arvo" :style "Regular")
  org-hide-emphasis-markers t)
 
 (add-hook 'org-mode-hook #'doom-private-setup-org)
 
-(custom-theme-set-faces! 'doom-dracula
+;;(custom-theme-set-faces! 'doom-dracula
   ;;`(font-lock-comment-face :foreground , (doom-darken 'yellow 0.5))
-  `(markdown-code-face :background ,(doom-darken 'bg 0.075))
-  `(font-lock-variable-name-face :foreground ,(doom-lighten 'magenta 0.6)))
+;;  `(markdown-code-face :background ,(doom-darken 'bg 0.075))
+;;  `(font-lock-variable-name-face :foreground ,(doom-lighten 'magenta 0.6)))
 
 (after! flycheck
   (setq
@@ -31,7 +31,6 @@
    flycheck-check-syntax-automatically '(mode-enabled save idle-change)))
 
 (setq
- lsp-log-io t
  lsp-diagnostic-clean-after-change t
  lsp-idle-delay 0.5
  lsp-ui-sideline-delay 0.5)
@@ -56,7 +55,6 @@
  poetry-tracking-strategy 'switch-buffer
  pyenv-mode-mode-line-format ""
  python-indent-def-block-scale 1
- ;; lsp-pylsp-server-command '("poetry" "run" "pylsp")
  lsp-pylsp-plugins-flake8-enabled nil
  lsp-pylsp-plugins-mccabe-enabled nil
  lsp-pylsp-plugins-pydocstyle-enabled nil)
@@ -79,6 +77,9 @@
 (after! lsp-mode
   (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.aws-sam\\'"))
 
+(setq-hook! 'inferior-python-mode-hook
+  corfu-auto nil)
+
 (setq rustic-indent-offset 4
   lsp-rust-analyzer-proc-macro-enable t)
 
@@ -90,35 +91,32 @@
 
 (setq json-reformat:indent-width 2) ;; Only for json not for jsonnet
 
+(use-package! just-mode
+  :defer t
+  :config
+  (setq just-indent-offset 2))
+
+(use-package! lsp-biome
+  :after lsp-mode
+  :config
+  (set-formatter! 'biome '("npx" "biome" "format" "--stdin-file-path" filepath) :modes '(typescript-tsx-mode typescript-mode astro-ts-mode)))
+
 (setq web-mode-markup-indent-offset 2
       web-mode-code-indent-offset 2
       typescript-indent-level 2)
 
 (after! lsp-mode
-  (lsp-defun my/filter-typescript ((params &as &PublishDiagnosticsParams :diagnostics)
-                                   _workspace)
-             (lsp:set-publish-diagnostics-params-diagnostics
-              params
-              (or (seq-filter (-lambda ((&Diagnostic :source? :code?))
-                                (not (and (string= "typescript" source?)
-                                          (string= "6133" (prin1-to-string code?)))))
+  (lsp-defun voidfilter/filter-unnecessary ((params &as &PublishDiagnosticsParams :diagnostics) _workspace)
+    (lsp:set-publish-diagnostics-params-diagnostics
+        params
+        (or (seq-filter (-lambda ((&Diagnostic :severity?))
+                          (< severity? 4))
+                        diagnostics)
+            []))
+    params)
 
-                              diagnostics)
-                  []))
-             params)
-
-  ;;;(setq lsp-diagnostic-filter 'my/filter-typescript )
+  (setq lsp-diagnostic-filter 'voidfilter/filter-unnecessary)
   (setf (alist-get 'web-mode lsp--formatting-indent-alist) 'web-mode-code-indent-offset))
-
-(define-derived-mode vue-mode web-mode "Vue"
-  "A major mode derived from web-mode, for editing .vue files with LSP support.")
-(add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
-(defun vue-setup()
-  (when (modulep! :tools lsp)
-    (lsp!)
-    (setq lsp-vetur-validation-template nil)))
-
-(add-hook 'vue-mode-hook #'vue-setup)
 
 (defadvice! --nxml-electric-slash-remove-duplicate-right-angle-and-indent (func arg)
   :around 'nxml-electric-slash
