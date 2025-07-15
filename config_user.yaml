@@ -105,11 +105,43 @@ dotfiles:
   d_wezterm:
     src: config/wezterm
     dst: ~/.config/wezterm
+  d_niri:
+    src: config/niri
+    dst: ~/.config/niri
+  d_xdg-desktop-portal:
+    src: config/xdg-desktop-portal
+    dst: ~/.config/xdg-desktop-portal
+  d_zellij:
+    src: config/zellij
+    dst: ~/.config/zellij
+  d_pipewire:
+    src: config/pipewire
+    dst: ~/.config/pipewire
+  d_gtklock:
+    src: config/gtklock
+    dst: ~/.config/gtklock
+  d_nwg-look:
+    src: config/nwg-look
+    dst: ~/.config/nwg-look
+  d_waypaper:
+    src: config/waypaper
+    dst: ~/.config/waypaper
+  d_waybar:
+    src: config/waybar
+    dst: ~/.config/waybar
 profiles:
   stealthlabs:
     dotfiles:
     - ALL
     - d_wezterm
+    - d_niri
+    - d_xdg-desktop-portal
+    - d_zellij
+    - d_pipewire
+    - d_gtklock
+    - d_nwg-look
+    - d_waypaper
+    - d_waybar
   thinkpad:
     dotfiles:
     - ALL

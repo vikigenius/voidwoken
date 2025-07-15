@@ -1,0 +1,59 @@
+@define-color dpurple #85678f;
+@define-color mag #bd93f9;
+@define-color lpurple #bd93f9;
+@define-color dgreen #4f9c69;
+@define-color gray1 #a7a7a7;
+@define-color gray2 #838184;
+@define-color gray3 #c3c3c3;
+@define-color lwhite #ededed;
+@define-color dred #a54242;
+@define-color rorange #cf6a4c;
+@define-color lyellow #f9ee98;
+@define-color dblue #7587a6;
+@define-color lblue #81a2be;
+@define-color dcyan #5e8d87;
+@define-color lcyan #8abeb7;
+@define-color dpink #9b859d;
+@define-color gblue #afc4db;
+@define-color pblack #5f5a60;
+@define-color white #f8f8f2;
+@define-color black #1e2029;
+@define-color dblack #1e1e1e;
+@define-color lblack1 #323537;
+@define-color lblack2 #464b50;
+@define-color gold #cda869;
+@define-color dgold #9b703f;
+
+/* black */
+@define-color color0 #1e2029;
+@define-color color8 #464b50;
+
+/* red */
+@define-color color1 #a54242;
+@define-color color9 #cf6a4c;
+
+/* red */
+@define-color color2 #4f9c69;
+@define-color color10 #b5bd68;
+
+/* yellow */
+@define-color color3 #9b703f;
+@define-color color11 #cda869;
+
+/* blue */
+@define-color color4 #7587a6;
+@define-color color12 #81a2be;
+
+/* magent */
+@define-color color5 #bd93f9;
+@define-color color13 #bd93f9;
+
+/* cyan */
+@define-color color6 #5e8d87;
+@define-color color14 #8abeb7;
+
+/* white */
+@define-color color7 #a7a7a7;
+@define-color color15 #ededed;
+
+
