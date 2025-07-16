@@ -129,6 +129,14 @@ dotfiles:
   d_waybar:
     src: config/waybar
     dst: ~/.config/waybar
+  f_zshenv:
+    src: zshenv
+    dst: ~/.zshenv
+    chmod: '600'
+  f_zshrc:
+    src: zshrc
+    dst: ~/.zshrc
+    chmod: '600'
 profiles:
   stealthlabs:
     dotfiles:
@@ -142,6 +150,8 @@ profiles:
     - d_nwg-look
     - d_waypaper
     - d_waybar
+    - f_zshenv
+    - f_zshrc
   thinkpad:
     dotfiles:
     - ALL

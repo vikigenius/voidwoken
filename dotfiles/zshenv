@@ -1,0 +1,21 @@
+# User configuration sourced by all invocations of the shell
+export CLR_OPENSSL_VERSION_OVERRIDE=47
+typeset -T NODE_PATH node_path
+typeset -U node_path
+typeset -U path
+typeset -T LD_LIBRARY_PATH ld_library_path
+typeset -U ld_library_path
+export RUSTUP_HOME=$HOME/.local/lib/rustup
+export CARGO_HOME=$HOME/.local/lib/cargo
+export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
+export CUDA_HOME=/usr/local/cuda
+path+=($XDG_CONFIG_HOME/emacs/bin $XDG_DATA_HOME/npm/bin $CARGO_HOME/bin $CUDA_HOME/bin)
+ld_library_path+=$CUDA_HOME/lib64
+# Move python shims to the front
+node_path+=$XDG_DATA_HOME/npm/lib/node_modules
+# TODO Do not overwrite. Update manpath instead
+export MANPATH="$XDG_DATA_HOME/npm/share/man:"
+export NODE_PATH
+export PATH
+export LD_LIBRARY_PATH
+export LIBVA_DRIVER_NAME=nvidia
