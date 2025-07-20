@@ -47,16 +47,24 @@ dotfiles:
     src:
     dst:
     actions:
-      - install 'neovim emacs'
+    - install 'neovim emacs'
   f_refind.conf:
     src: boot/efi/EFI/refind/refind.conf
     dst: /boot/efi/EFI/refind/refind.conf
     actions:
-      - refind_theme
+    - refind_theme
+  d_greetd:
+    src: etc/greetd
+    dst: /etc/greetd
+  d_wayland-sessions:
+    src: usr/share/wayland-sessions
+    dst: /usr/share/wayland-sessions
 profiles:
   stealthlabs:
     dotfiles:
     - ALL
+    - d_greetd
+    - d_wayland-sessions
   thinkpad:
     dotfiles:
     - ALL

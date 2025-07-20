@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Wayland
+Comment=A scrollable-tiling Wayland compositor
+Exec=dbus-run-session /usr/bin/niri --session
+Type=Application
+DesktopNames=wayland

@@ -1,0 +1,12 @@
+@define-color on_surface #dee3e5;
+@define-color shadow #000000;
+@define-color surface #11121d;
+@define-color primary_container #004e5a;
+@define-color on_primary_container #a3eeff;
+@define-color on_error_container #d90f0f;
+@define-color on_error #690005;
+@define-color error #ffb4ab;
+@define-color on_surface_variant #bfc8cb;
+@define-color surface_variant #3f484b;
+@define-color surface_dim #0e1416;
+@define-color primary #83d2e4;
