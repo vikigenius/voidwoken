@@ -137,6 +137,9 @@ dotfiles:
     src: zshrc
     dst: ~/.zshrc
     chmod: '600'
+  d_alacritty:
+    src: config/alacritty
+    dst: ~/.config/alacritty
 profiles:
   stealthlabs:
     dotfiles:
@@ -152,6 +155,7 @@ profiles:
     - d_waybar
     - f_zshenv
     - f_zshrc
+    - d_alacritty
   thinkpad:
     dotfiles:
     - ALL
