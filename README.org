@@ -4,3 +4,9 @@ This repository contains my dotfiles needed for replicating my development envir
 * Usage
 - Use pipx to install dotdrop.
 - Clone the repository into ~$HOME/.local/lib~
+
+* Fonts
+- Avro
+- Fira Sans
+- JetBrains Mono
+- Emacs all the icons

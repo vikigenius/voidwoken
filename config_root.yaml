@@ -66,6 +66,12 @@ dotfiles:
     src: etc/sv/greetd/run
     dst: /etc/sv/greetd/run
     chmod: '755'
+  f_user-dirs.conf:
+    src: etc/xdg/user-dirs.conf
+    dst: /etc/xdg/user-dirs.conf
+  f_flatpak.sh:
+    src: etc/profile.d/flatpak.sh
+    dst: /etc/profile.d/flatpak.sh
 profiles:
   stealthlabs:
     dotfiles:
@@ -74,6 +80,8 @@ profiles:
     - d_wayland-sessions
     - f_greetd
     - f_run
+    - f_user-dirs.conf
+    - f_flatpak.sh
   thinkpad:
     dotfiles:
     - ALL

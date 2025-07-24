@@ -140,6 +140,9 @@ dotfiles:
   d_alacritty:
     src: config/alacritty
     dst: ~/.config/alacritty
+  f_gsettings:
+    src: local/share/nwg-look/gsettings
+    dst: ~/.local/share/nwg-look/gsettings
 profiles:
   stealthlabs:
     dotfiles:
@@ -156,6 +159,7 @@ profiles:
     - f_zshenv
     - f_zshrc
     - d_alacritty
+    - f_gsettings
   thinkpad:
     dotfiles:
     - ALL
