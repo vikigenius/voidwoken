@@ -1,0 +1,5 @@
+#!/bin/sh
+# Needed because of pam_ssh needing large mlock
+ulimit -l 65536
+exec 2>&1
+exec greetd

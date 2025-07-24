@@ -59,12 +59,21 @@ dotfiles:
   d_wayland-sessions:
     src: usr/share/wayland-sessions
     dst: /usr/share/wayland-sessions
+  f_greetd:
+    src: etc/pam.d/greetd
+    dst: /etc/pam.d/greetd
+  f_run:
+    src: etc/sv/greetd/run
+    dst: /etc/sv/greetd/run
+    chmod: '755'
 profiles:
   stealthlabs:
     dotfiles:
     - ALL
     - d_greetd
     - d_wayland-sessions
+    - f_greetd
+    - f_run
   thinkpad:
     dotfiles:
     - ALL
